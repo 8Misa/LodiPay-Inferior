@@ -280,32 +280,5 @@
             </div>
         </div>
     </div>
-
-    <script>
-        // Toggle password visibility
-        document.getElementById('togglePassword').addEventListener('click', function() {
-            const passwordInput = document.getElementById('password');
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-        });
-        
-        // Form submission
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            // Simple validation
-            if (email && password) {
-                // Simulate login
-                alert('Login successful! Welcome to LodiPay.');
-                this.reset();
-            } else {
-                alert('Please fill in all fields.');
-            }
-        });
-    </script>
 </body>
 </html>

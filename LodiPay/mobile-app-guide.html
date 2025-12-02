@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LodiPay - Mobile App Guide</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    * {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+    body {background-color:#f5f7fa; color:#333; min-height:100vh;}
+    .dashboard-container {display:flex; min-height:100vh;}
+    .sidebar {width:250px; background:linear-gradient(180deg,#08CB00 0%,#06A000 100%); color:white; padding:20px 0; box-shadow:3px 0 10px rgba(0,0,0,0.1); z-index:100;}
+    .logo-container {text-align:center; margin-bottom:30px; padding:0 20px;}
+    .logo {font-size:1.8rem; font-weight:700; color:white;}
+    .logo span {color:#FFD700;}
+    .nav-links {list-style:none; padding:0 15px;}
+    .nav-links li {margin-bottom:5px;}
+    .nav-links a {display:flex; align-items:center; padding:12px 15px; color:rgba(255,255,255,0.9); text-decoration:none; border-radius:8px; transition:all 0.3s ease;}
+    .nav-links a:hover, .nav-links a.active {background:rgba(255,255,255,0.2); color:white;}
+    .nav-links i {margin-right:12px; width:20px; text-align:center;}
+    .main-content {flex:1; padding:20px; overflow-y:auto;}
+    .header {display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; padding-bottom:20px; border-bottom:1px solid #eee;}
+    .header h1 {color:#333; font-size:1.8rem;}
+    .user-info {display:flex; align-items:center; gap:15px;}
+    .user-avatar {width:40px; height:40px; border-radius:50%; background:#08CB00; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;}
+    .breadcrumb {display:flex; align-items:center; gap:10px; margin-bottom:20px; color:#777;}
+    .breadcrumb a {color:#08CB00; text-decoration:none;}
+    .breadcrumb a:hover {text-decoration:underline;}
+    .guide-container {background:white; border-radius:12px; padding:30px; box-shadow:0 4px 15px rgba(0,0,0,0.05);}
+    .guide-header {margin-bottom:30px; text-align:center;}
+    .guide-title {font-size:2rem; font-weight:700; color:#333; margin-bottom:15px;}
+    .guide-description {color:#777; font-size:1.1rem; max-width:700px; margin:0 auto 20px; line-height:1.6;}
+    .app-download {display:flex; justify-content:center; gap:20px; margin-bottom:40px; flex-wrap:wrap;}
+    .download-btn {display:flex; align-items:center; gap:12px; padding:15px 25px; background:#f8f9fa; border-radius:10px; color:#333; text-decoration:none; transition:all 0.3s ease; border:1px solid #ddd; min-width:200px; justify-content:center;}
+    .download-btn:hover {transform:translateY(-5px); box-shadow:0 6px 15px rgba(0,0,0,0.1); border-color:#08CB00;}
+    .download-btn i {font-size:2rem;}
+    .app-preview {display:flex; justify-content:center; gap:30px; margin-bottom:40px; flex-wrap:wrap;}
+    .phone-frame {width:250px; height:500px; background:#333; border-radius:30px; position:relative; box-shadow:0 20px 40px rgba(0,0,0,0.2); padding:20px 10px;}
+    .phone-screen {width:100%; height:100%; background:#f8f9fa; border-radius:20px; overflow:hidden; display:flex; flex-direction:column;}
+    .phone-header {background:linear-gradient(180deg,#08CB00 0%,#06A000 100%); color:white; padding:15px; text-align:center; font-weight:600;}
+    .phone-content {flex:1; padding:15px; overflow-y:auto;}
+    .phone-menu {display:flex; justify-content:space-around; padding:10px; background:#eee; border-top:1px solid #ddd;}
+    .phone-menu-item {text-align:center; font-size:0.8rem; color:#555;}
+    .phone-menu-item i {display:block; font-size:1.2rem; margin-bottom:5px;}
+    .features-container {margin-bottom:40px;}
+    .features-grid {display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:25px;}
+    .feature-card {background:#f8f9fa; border-radius:12px; padding:25px; transition:all 0.3s ease; border:1px solid #eee;}
+    .feature-card:hover {transform:translateY(-5px); box-shadow:0 6px 15px rgba(0,0,0,0.08); border-color:#08CB00;}
+    .feature-icon {width:50px; height:50px; border-radius:12px; background:rgba(8,203,0,0.1); color:#08CB00; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin-bottom:20px;}
+    .feature-title {font-size:1.3rem; font-weight:600; margin-bottom:15px; color:#333;}
+    .feature-description {color:#777; line-height:1.6; margin-bottom:20px;}
+    .feature-steps {margin-top:15px; padding-left:20px;}
+    .feature-steps li {margin-bottom:10px; color:#555;}
+    .tips-section {background:#fff8e6; border-left:4px solid #fbbc05; padding:25px; border-radius:0 8px 8px 0; margin-bottom:30px;}
+    .tips-title {font-size:1.3rem; font-weight:600; color:#333; margin-bottom:15px; display:flex; align-items:center; gap:10px;}
+    .tips-content {color:#555; line-height:1.6;}
+    .tips-list {margin-top:15px; padding-left:20px;}
+    .tips-list li {margin-bottom:10px;}
+    .cta-section {text-align:center; padding:40px 20px; background:#f8f9fa; border-radius:12px; margin-bottom:30px;}
+    .cta-title {font-size:1.8rem; font-weight:700; margin-bottom:15px; color:#333;}
+    .cta-description {color:#777; margin-bottom:25px; max-width:600px; margin-left:auto; margin-right:auto; line-height:1.6;}
+    .btn {padding:12px 30px; border-radius:8px; font-weight:600; cursor:pointer; transition:all 0.3s ease; border:none; font-size:1rem;}
+    .btn-primary {background:#08CB00; color:white;}
+    .btn-primary:hover {opacity:0.9; transform:translateY(-2px);}
+    @media(max-width:768px){
+        .dashboard-container{flex-direction:column;}
+        .sidebar{width:100%; padding:15px 0;}
+        .nav-links{display:flex; overflow-x:auto; padding:0 10px;}
+        .nav-links li{margin:0 5px;}
+        .nav-links a{padding:10px 15px; white-space:nowrap;}
+        .main-content{padding:15px;}
+        .app-download{flex-direction:column; align-items:center;}
+        .app-preview{flex-direction:column; align-items:center;}
+        .features-grid{grid-template-columns:1fr;}
+    }
+</style>
+</head>
+<body>
+<div class="dashboard-container">
+    <div class="sidebar">
+        <div class="logo-container">
+            <div class="logo">Lodi<span>Pay</span></div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+            <li><a href="wallet.html"><i class="fas fa-wallet"></i> Wallet</a></li>
+            <li><a href="cards.html"><i class="fas fa-credit-card"></i> Cards</a></li>
+            <li><a href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a href="support.html"><i class="fas fa-question-circle"></i> Support</a></li>
+            <li><a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Mobile App Guide</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar"></div>
+                <div>
+                    <div id="user-name" style="font-weight:600;"></div>
+                    <div id="user-tier" style="font-size:0.8rem; color:#777;">Premium User</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="support.html">Support</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Mobile App Guide</span>
+        </div>
+
+        <div class="guide-container">
+            <div class="guide-header">
+                <h1 class="guide-title">LodiPay Mobile App</h1>
+                <p class="guide-description">Manage your finances on the go with our powerful mobile application. Available for iOS and Android devices.</p>
+            </div>
+
+            <div class="app-download">
+                <a href="#" class="download-btn">
+                    <i class="fab fa-apple"></i>
+                    <div>
+                        <div>Download on the</div>
+                        <div style="font-size:1.2rem; font-weight:600;">App Store</div>
+                    </div>
+                </a>
+                <a href="#" class="download-btn">
+                    <i class="fab fa-google-play"></i>
+                    <div>
+                        <div>Get it on</div>
+                        <div style="font-size:1.2rem; font-weight:600;">Google Play</div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="app-preview">
+                <div class="phone-frame">
+                    <div class="phone-screen">
+                        <div class="phone-header">LodiPay</div>
+                        <div class="phone-content">
+                            <div style="text-align:center; padding:20px 0;">
+                                <div style="width:80px; height:80px; background:linear-gradient(180deg,#08CB00 0%,#06A000 100%); border-radius:50%; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; color:white; font-size:2rem;">
+                                    <i class="fas fa-wallet"></i>
+                                </div>
+                                <div style="font-size:1.5rem; font-weight:600; margin-bottom:5px;">₱12,560.75</div>
+                                <div style="color:#777; font-size:0.9rem;">Available Balance</div>
+                            </div>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:20px;">
+                                <div style="background:white; border-radius:10px; padding:15px; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+                                    <i class="fas fa-paper-plane" style="color:#08CB00; font-size:1.2rem; margin-bottom:10px;"></i>
+                                    <div style="font-size:0.8rem;">Send</div>
+                                </div>
+                                <div style="background:white; border-radius:10px; padding:15px; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+                                    <i class="fas fa-qrcode" style="color:#4285f4; font-size:1.2rem; margin-bottom:10px;"></i>
+                                    <div style="font-size:0.8rem;">Request</div>
+                                </div>
+                                <div style="background:white; border-radius:10px; padding:15px; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+                                    <i class="fas fa-file-invoice" style="color:#fbbc05; font-size:1.2rem; margin-bottom:10px;"></i>
+                                    <div style="font-size:0.8rem;">Bills</div>
+                                </div>
+                                <div style="background:white; border-radius:10px; padding:15px; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+                                    <i class="fas fa-history" style="color:#ea4335; font-size:1.2rem; margin-bottom:10px;"></i>
+                                    <div style="font-size:0.8rem;">History</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="phone-menu">
+                            <div class="phone-menu-item">
+                                <i class="fas fa-home"></i>
+                                <span>Home</span>
+                            </div>
+                            <div class="phone-menu-item">
+                                <i class="fas fa-exchange-alt"></i>
+                                <span>Transfer</span>
+                            </div>
+                            <div class="phone-menu-item">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Analytics</span>
+                            </div>
+                            <div class="phone-menu-item">
+                                <i class="fas fa-cog"></i>
+                                <span>Settings</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="features-container">
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-paper-plane"></i>
+                        </div>
+                        <h3 class="feature-title">Quick Transfers</h3>
+                        <p class="feature-description">Send money to friends and family in seconds with just their phone number or email.</p>
+                        <ol class="feature-steps">
+                            <li>Tap "Send" on the home screen</li>
+                            <li>Enter recipient's contact info</li>
+                            <li>Input amount and add note</li>
+                            <li>Confirm with fingerprint or PIN</li>
+                        </ol>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <h3 class="feature-title">QR Code Payments</h3>
+                        <p class="feature-description">Pay at merchants or receive money using our secure QR code system.</p>
+                        <ol class="feature-steps">
+                            <li>Select "QR Code" from menu</li>
+                            <li>Scan merchant's QR code to pay</li>
+                            <li>Show your QR code to receive money</li>
+                            <li>Confirm transactions instantly</li>
+                        </ol>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3 class="feature-title">Biometric Security</h3>
+                        <p class="feature-description">Secure your app with fingerprint, face recognition, or PIN protection.</p>
+                        <ol class="feature-steps">
+                            <li>Enable biometric in Settings</li>
+                            <li>Set up your preferred method</li>
+                            <li>Use for quick authentication</li>
+                            <li>Manage security settings anytime</li>
+                        </ol>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <h3 class="feature-title">Real-time Notifications</h3>
+                        <p class="feature-description">Stay informed with instant alerts for all your transactions and account activity.</p>
+                        <ol class="feature-steps">
+                            <li>Customize notification preferences</li>
+                            <li>Enable push notifications</li>
+                            <li>Receive instant transaction alerts</li>
+                            <li>Get security notifications</li>
+                        </ol>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="feature-title">Financial Insights</h3>
+                        <p class="feature-description">Track your spending habits and manage your budget with detailed analytics.</p>
+                        <ol class="feature-steps">
+                            <li>Access Analytics from menu</li>
+                            <li>View spending categories</li>
+                            <li>Set budget goals</li>
+                            <li>Receive monthly reports</li>
+                        </ol>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <h3 class="feature-title">Card Management</h3>
+                        <p class="feature-description">Link and manage all your payment cards directly from the app.</p>
+                        <ol class="feature-steps">
+                            <li>Go to Cards section</li>
+                            <li>Add new card securely</li>
+                            <li>Set default payment method</li>
+                            <li>Freeze/unfreeze cards instantly</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tips-section">
+                <h3 class="tips-title">
+                    <i class="fas fa-lightbulb"></i>
+                    Pro Tips for Using the App
+                </h3>
+                <p class="tips-content">Maximize your LodiPay experience with these helpful tips:</p>
+                <ul class="tips-list">
+                    <li><strong>Enable Dark Mode</strong> - Reduce eye strain in low-light conditions by switching to dark theme in Settings</li>
+                    <li><strong>Use Widgets</strong> - Add LodiPay widgets to your home screen for quick access to balances and transfers</li>
+                    <li><strong>Set Up Quick Actions</strong> - Configure shortcuts for your most frequent transactions</li>
+                    <li><strong>Enable Location Services</strong> - Find nearby ATMs and partner merchants instantly</li>
+                    <li><strong>Regular Updates</strong> - Keep your app updated to enjoy the latest features and security enhancements</li>
+                </ul>
+            </div>
+
+            <div class="cta-section">
+                <h2 class="cta-title">Get Started Today</h2>
+                <p class="cta-description">Download the LodiPay app and experience the convenience of managing your finances on the go.</p>
+                <button class="btn btn-primary" id="download-app">Download Now</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

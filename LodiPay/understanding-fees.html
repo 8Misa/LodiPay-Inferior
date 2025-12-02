@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LodiPay - Understanding Fees</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    * {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+    body {background-color:#f5f7fa; color:#333; min-height:100vh;}
+    .dashboard-container {display:flex; min-height:100vh;}
+    .sidebar {width:250px; background:linear-gradient(180deg,#08CB00 0%,#06A000 100%); color:white; padding:20px 0; box-shadow:3px 0 10px rgba(0,0,0,0.1); z-index:100;}
+    .logo-container {text-align:center; margin-bottom:30px; padding:0 20px;}
+    .logo {font-size:1.8rem; font-weight:700; color:white;}
+    .logo span {color:#FFD700;}
+    .nav-links {list-style:none; padding:0 15px;}
+    .nav-links li {margin-bottom:5px;}
+    .nav-links a {display:flex; align-items:center; padding:12px 15px; color:rgba(255,255,255,0.9); text-decoration:none; border-radius:8px; transition:all 0.3s ease;}
+    .nav-links a:hover, .nav-links a.active {background:rgba(255,255,255,0.2); color:white;}
+    .nav-links i {margin-right:12px; width:20px; text-align:center;}
+    .main-content {flex:1; padding:20px; overflow-y:auto;}
+    .header {display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; padding-bottom:20px; border-bottom:1px solid #eee;}
+    .header h1 {color:#333; font-size:1.8rem;}
+    .user-info {display:flex; align-items:center; gap:15px;}
+    .user-avatar {width:40px; height:40px; border-radius:50%; background:#08CB00; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;}
+    .breadcrumb {display:flex; align-items:center; gap:10px; margin-bottom:20px; color:#777;}
+    .breadcrumb a {color:#08CB00; text-decoration:none;}
+    .breadcrumb a:hover {text-decoration:underline;}
+    .guide-container {background:white; border-radius:12px; padding:30px; box-shadow:0 4px 15px rgba(0,0,0,0.05);}
+    .guide-header {margin-bottom:30px; text-align:center;}
+    .guide-title {font-size:2rem; font-weight:700; color:#333; margin-bottom:15px;}
+    .guide-description {color:#777; font-size:1.1rem; max-width:700px; margin:0 auto 20px; line-height:1.6;}
+    .fees-container {margin-bottom:40px;}
+    .fees-grid {display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:25px; margin-bottom:30px;}
+    .fee-card {background:#f8f9fa; border-radius:12px; padding:25px; transition:all 0.3s ease; border:1px solid #eee;}
+    .fee-card:hover {transform:translateY(-5px); box-shadow:0 6px 15px rgba(0,0,0,0.08); border-color:#08CB00;}
+    .fee-icon {width:50px; height:50px; border-radius:12px; background:rgba(8,203,0,0.1); color:#08CB00; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin-bottom:20px;}
+    .fee-title {font-size:1.3rem; font-weight:600; margin-bottom:15px; color:#333;}
+    .fee-amount {font-size:1.8rem; font-weight:700; color:#08CB00; margin-bottom:15px;}
+    .fee-description {color:#777; line-height:1.6; margin-bottom:20px;}
+    .fee-examples {background:#e9f7ef; border-radius:8px; padding:15px; margin-top:15px;}
+    .fee-examples h4 {font-weight:600; margin-bottom:10px; color:#333;}
+    .fee-examples ul {padding-left:20px;}
+    .fee-examples li {margin-bottom:8px; color:#555; font-size:0.95rem;}
+    .fee-comparison {background:white; border-radius:12px; padding:25px; box-shadow:0 4px 10px rgba(0,0,0,0.05); margin-bottom:30px; border:1px solid #eee;}
+    .comparison-title {font-size:1.5rem; font-weight:600; margin-bottom:20px; color:#333; text-align:center;}
+    .comparison-table {width:100%; border-collapse:collapse;}
+    .comparison-table th {background:#f8f9fa; padding:15px; text-align:left; font-weight:600; color:#555; border-bottom:2px solid #eee;}
+    .comparison-table td {padding:15px; border-bottom:1px solid #eee; color:#555;}
+    .comparison-table tr:last-child td {border-bottom:none;}
+    .comparison-table tr:hover td {background:#f8f9fa;}
+    .fee-highlight {font-weight:600; color:#08CB00;}
+    .savings-tip {background:#fff8e6; border-left:4px solid #fbbc05; padding:20px; border-radius:0 8px 8px 0; margin-bottom:30px;}
+    .savings-title {font-size:1.3rem; font-weight:600; color:#333; margin-bottom:10px; display:flex; align-items:center; gap:10px;}
+    .savings-content {color:#555; line-height:1.6;}
+    .cta-section {text-align:center; padding:40px 20px; background:#f8f9fa; border-radius:12px; margin-bottom:30px;}
+    .cta-title {font-size:1.8rem; font-weight:700; margin-bottom:15px; color:#333;}
+    .cta-description {color:#777; margin-bottom:25px; max-width:600px; margin-left:auto; margin-right:auto; line-height:1.6;}
+    .btn {padding:12px 30px; border-radius:8px; font-weight:600; cursor:pointer; transition:all 0.3s ease; border:none; font-size:1rem;}
+    .btn-primary {background:#08CB00; color:white;}
+    .btn-primary:hover {opacity:0.9; transform:translateY(-2px);}
+    @media(max-width:768px){
+        .dashboard-container{flex-direction:column;}
+        .sidebar{width:100%; padding:15px 0;}
+        .nav-links{display:flex; overflow-x:auto; padding:0 10px;}
+        .nav-links li{margin:0 5px;}
+        .nav-links a{padding:10px 15px; white-space:nowrap;}
+        .main-content{padding:15px;}
+        .fees-grid{grid-template-columns:1fr;}
+        .comparison-table {display:block; overflow-x:auto;}
+    }
+</style>
+</head>
+<body>
+<div class="dashboard-container">
+    <div class="sidebar">
+        <div class="logo-container">
+            <div class="logo">Lodi<span>Pay</span></div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+            <li><a href="wallet.html"><i class="fas fa-wallet"></i> Wallet</a></li>
+            <li><a href="cards.html"><i class="fas fa-credit-card"></i> Cards</a></li>
+            <li><a href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a href="support.html"><i class="fas fa-question-circle"></i> Support</a></li>
+            <li><a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Understanding Fees</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar"></div>
+                <div>
+                    <div id="user-name" style="font-weight:600;"></div>
+                    <div id="user-tier" style="font-size:0.8rem; color:#777;">Premium User</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="support.html">Support</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Understanding Fees</span>
+        </div>
+
+        <div class="guide-container">
+            <div class="guide-header">
+                <h1 class="guide-title">Transparent Fee Structure</h1>
+                <p class="guide-description">Understand all fees associated with using LodiPay services. We believe in transparent pricing with no hidden costs.</p>
+            </div>
+
+            <div class="fees-container">
+                <div class="fees-grid">
+                    <div class="fee-card">
+                        <div class="fee-icon">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <h3 class="fee-title">Domestic Transfers</h3>
+                        <div class="fee-amount">₱0.00</div>
+                        <p class="fee-description">Send money to other LodiPay users within the Philippines with no transaction fees.</p>
+                        <div class="fee-examples">
+                            <h4>Examples:</h4>
+                            <ul>
+                                <li>Sending ₱1,000 to a friend: ₱0.00</li>
+                                <li>Sending ₱5,000 to family: ₱0.00</li>
+                                <li>Requesting payments: ₱0.00</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="fee-card">
+                        <div class="fee-icon">
+                            <i class="fas fa-globe-asia"></i>
+                        </div>
+                        <h3 class="fee-title">International Transfers</h3>
+                        <div class="fee-amount">1.0%</div>
+                        <p class="fee-description">Low-cost international money transfers with a minimum fee of ₱100.</p>
+                        <div class="fee-examples">
+                            <h4>Examples:</h4>
+                            <ul>
+                                <li>Sending $100 USD: ₱55.00 (~₱100)</li>
+                                <li>Sending €500 EUR: ₱300.00 (~₱100)</li>
+                                <li>Sending ¥10,000 JPY: ₱450.00 (~₱100)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="fee-card">
+                        <div class="fee-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <h3 class="fee-title">Card Payments</h3>
+                        <div class="fee-amount">₱0.00</div>
+                        <p class="fee-description">No fees for using your linked debit or credit cards for transactions.</p>
+                        <div class="fee-examples">
+                            <h4>Examples:</h4>
+                            <ul>
+                                <li>Adding funds with card: ₱0.00</li>
+                                <li>Online purchases: ₱0.00</li>
+                                <li>Bill payments: ₱0.00</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="fee-card">
+                        <div class="fee-icon">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <h3 class="fee-title">Bills Payment</h3>
+                        <div class="fee-amount">₱0.00</div>
+                        <p class="fee-description">Pay your utilities, subscriptions, and other bills without any service charges.</p>
+                        <div class="fee-examples">
+                            <h4>Examples:</h4>
+                            <ul>
+                                <li>Electricity bill: ₱0.00</li>
+                                <li>Water bill: ₱0.00</li>
+                                <li>Internet subscription: ₱0.00</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="fee-card">
+                        <div class="fee-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3 class="fee-title">Cash In/Out</h3>
+                        <div class="fee-amount">₱15.00</div>
+                        <p class="fee-description">Small fee for cash transactions at partner locations (banks, convenience stores).</p>
+                        <div class="fee-examples">
+                            <h4>Examples:</h4>
+                            <ul>
+                                <li>Cash-in at 7-Eleven: ₱15.00</li>
+                                <li>Bank deposit: ₱15.00</li>
+                                <li>ATM withdrawal: ₱15.00</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="fee-card">
+                        <div class="fee-icon">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                        <h3 class="fee-title">Savings & Investments</h3>
+                        <div class="fee-amount">0.5%</div>
+                        <p class="fee-description">Minimal management fees for savings and investment products to help your money grow.</p>
+                        <div class="fee-examples">
+                            <h4>Examples:</h4>
+                            <ul>
+                                <li>Monthly savings fee: 0.5% of balance</li>
+                                <li>Investment management: 0.5% annually</li>
+                                <li>Premium accounts: No additional fees</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fee-comparison">
+                <h3 class="comparison-title">Fee Comparison by Account Type</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Standard Account</th>
+                            <th>Premium Account</th>
+                            <th>VIP Account</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Domestic Transfers</td>
+                            <td>₱15.00 per transaction</td>
+                            <td class="fee-highlight">Free</td>
+                            <td class="fee-highlight">Free</td>
+                        </tr>
+                        <tr>
+                            <td>International Transfers</td>
+                            <td>1.5% (min ₱150)</td>
+                            <td>1.0% (min ₱100)</td>
+                            <td class="fee-highlight">0.5% (min ₱50)</td>
+                        </tr>
+                        <tr>
+                            <td>Cash In/Out</td>
+                            <td>₱15.00</td>
+                            <td>₱10.00</td>
+                            <td class="fee-highlight">Free</td>
+                        </tr>
+                        <tr>
+                            <td>Card Payments</td>
+                            <td>Free</td>
+                            <td>Free</td>
+                            <td>Free</td>
+                        </tr>
+                        <tr>
+                            <td>Bills Payment</td>
+                            <td>Free</td>
+                            <td>Free</td>
+                            <td>Free</td>
+                        </tr>
+                        <tr>
+                            <td>Monthly Maintenance</td>
+                            <td>Free</td>
+                            <td>₱99.00</td>
+                            <td>₱499.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="savings-tip">
+                <h3 class="savings-title">
+                    <i class="fas fa-lightbulb"></i>
+                    Save on Fees Tip
+                </h3>
+                <p class="savings-content">Upgrade to a Premium account for just ₱99/month and enjoy free domestic transfers, reduced international fees, and many other exclusive benefits. The savings on transaction fees alone can cover the cost of your Premium membership!</p>
+            </div>
+
+            <div class="cta-section">
+                <h2 class="cta-title">Upgrade Your Account</h2>
+                <p class="cta-description">Get access to reduced fees and premium features with our Premium or VIP account options.</p>
+                <button class="btn btn-primary" id="upgrade-account">View Account Options</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

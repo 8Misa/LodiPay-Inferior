@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LodiPay - Support</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    * {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+    body {background-color:#f5f7fa; color:#333; min-height:100vh;}
+    .dashboard-container {display:flex; min-height:100vh;}
+    .sidebar {width:250px; background:linear-gradient(180deg,#08CB00 0%,#06A000 100%); color:white; padding:20px 0; box-shadow:3px 0 10px rgba(0,0,0,0.1); z-index:100;}
+    .logo-container {text-align:center; margin-bottom:30px; padding:0 20px;}
+    .logo {font-size:1.8rem; font-weight:700; color:white;}
+    .logo span {color:#FFD700;}
+    .nav-links {list-style:none; padding:0 15px;}
+    .nav-links li {margin-bottom:5px;}
+    .nav-links a {display:flex; align-items:center; padding:12px 15px; color:rgba(255,255,255,0.9); text-decoration:none; border-radius:8px; transition:all 0.3s ease;}
+    .nav-links a:hover, .nav-links a.active {background:rgba(255,255,255,0.2); color:white;}
+    .nav-links i {margin-right:12px; width:20px; text-align:center;}
+    .main-content {flex:1; padding:20px; overflow-y:auto;}
+    .header {display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; padding-bottom:20px; border-bottom:1px solid #eee;}
+    .header h1 {color:#333; font-size:1.8rem;}
+    .user-info {display:flex; align-items:center; gap:15px;}
+    .user-avatar {width:40px; height:40px; border-radius:50%; background:#08CB00; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;}
+    .section-title {font-size:1.5rem; margin-bottom:20px; color:#333; display:flex; align-items:center; gap:10px;}
+    .support-container {display:grid; grid-template-columns:1fr 350px; gap:30px;}
+    .support-content {background:white; border-radius:12px; padding:30px; box-shadow:0 4px 15px rgba(0,0,0,0.05);}
+    .help-center {margin-bottom:40px;}
+    .help-header {margin-bottom:25px;}
+    .help-title {font-size:1.8rem; font-weight:700; color:#333; margin-bottom:10px;}
+    .help-description {color:#777; font-size:1.1rem; line-height:1.6;}
+    .search-container {margin-bottom:30px; position:relative;}
+    .search-input {width:100%; padding:15px 20px 15px 50px; border:1px solid #ddd; border-radius:10px; font-size:1rem; transition:all 0.3s ease;}
+    .search-input:focus {outline:none; border-color:#08CB00; box-shadow:0 0 0 3px rgba(8,203,0,0.1);}
+    .search-icon {position:absolute; left:20px; top:50%; transform:translateY(-50%); color:#aaa;}
+    .categories {margin-bottom:40px;}
+    .categories-title {font-size:1.3rem; font-weight:600; margin-bottom:20px; color:#333;}
+    .categories-grid {display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:20px;}
+    .category-card {background:#f8f9fa; border-radius:12px; padding:25px; transition:all 0.3s ease; cursor:pointer; border:1px solid #eee;}
+    .category-card:hover {transform:translateY(-5px); box-shadow:0 6px 15px rgba(0,0,0,0.08); border-color:#08CB00;}
+    .category-icon {width:60px; height:60px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin-bottom:15px;}
+    .account .category-icon {background:rgba(8,203,0,0.1); color:#08CB00;}
+    .transactions .category-icon {background:rgba(66,133,244,0.1); color:#4285f4;}
+    .payments .category-icon {background:rgba(251,188,5,0.1); color:#fbbc05;}
+    .security .category-icon {background:rgba(234,67,53,0.1); color:#ea4335;}
+    .category-title {font-size:1.1rem; font-weight:600; margin-bottom:10px; color:#333;}
+    .category-desc {color:#777; font-size:0.95rem; line-height:1.5;}
+    .contact-section {margin-bottom:40px;}
+    .contact-title {font-size:1.3rem; font-weight:600; margin-bottom:20px; color:#333;}
+    .contact-options {display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:20px;}
+    .contact-card {background:#f8f9fa; border-radius:12px; padding:25px; text-align:center; transition:all 0.3s ease; border:1px solid #eee;}
+    .contact-card:hover {transform:translateY(-5px); box-shadow:0 6px 15px rgba(0,0,0,0.08); border-color:#08CB00;}
+    .contact-icon {width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin:0 auto 15px;}
+    .chat .contact-icon {background:rgba(8,203,0,0.1); color:#08CB00;}
+    .email .contact-icon {background:rgba(66,133,244,0.1); color:#4285f4;}
+    .phone .contact-icon {background:rgba(251,188,5,0.1); color:#fbbc05;}
+    .contact-label {font-size:1.1rem; font-weight:600; margin-bottom:10px; color:#333;}
+    .contact-detail {color:#777; font-size:0.95rem; margin-bottom:15px;}
+    .contact-btn {padding:10px 20px; background:#08CB00; color:white; border:none; border-radius:6px; font-weight:600; cursor:pointer; transition:all 0.3s ease;}
+    .contact-btn:hover {opacity:0.9; transform:translateY(-2px);}
+    .faq-section {margin-bottom:40px;}
+    .faq-title {font-size:1.3rem; font-weight:600; margin-bottom:20px; color:#333;}
+    .faq-list {margin-bottom:30px;}
+    .faq-item {margin-bottom:15px; border:1px solid #eee; border-radius:8px; overflow:hidden;}
+    .faq-question {padding:15px 20px; background:#f8f9fa; font-weight:600; cursor:pointer; display:flex; justify-content:space-between; align-items:center;}
+    .faq-answer {padding:0 20px; max-height:0; overflow:hidden; transition:all 0.3s ease; background:white;}
+    .faq-answer.open {padding:20px; max-height:500px;}
+    .support-sidebar {background:white; border-radius:12px; padding:25px; box-shadow:0 4px 15px rgba(0,0,0,0.05);}
+    .sidebar-title {font-size:1.3rem; font-weight:600; margin-bottom:20px; color:#333;}
+    .knowledge-base {margin-bottom:30px;}
+    .kb-item {display:flex; align-items:flex-start; gap:12px; padding:15px; border-bottom:1px solid #eee; transition:all 0.3s ease; cursor:pointer;}
+    .kb-item:hover {background:#f8f9fa;}
+    .kb-item:last-child {border-bottom:none;}
+    .kb-icon {width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1rem; background:rgba(8,203,0,0.1); color:#08CB00; flex-shrink:0;}
+    .kb-info {flex:1;}
+    .kb-title {font-weight:500; margin-bottom:5px; color:#333;}
+    .kb-desc {font-size:0.9rem; color:#777;}
+    .feedback {text-align:center; padding:20px; background:#f8f9fa; border-radius:8px;}
+    .feedback-title {font-weight:600; margin-bottom:10px; color:#333;}
+    .feedback-desc {font-size:0.9rem; color:#777; margin-bottom:15px;}
+    .feedback-btn {padding:10px 20px; background:#08CB00; color:white; border:none; border-radius:6px; font-weight:600; cursor:pointer; transition:all 0.3s ease;}
+    .feedback-btn:hover {opacity:0.9; transform:translateY(-2px);}
+    .category-content {display:none; margin-top:30px; padding-top:30px; border-top:1px solid #eee;}
+    .category-header {margin-bottom:20px;}
+    .category-back {color:#08CB00; cursor:pointer; display:flex; align-items:center; gap:8px; margin-bottom:15px;}
+    .category-content-title {font-size:1.5rem; font-weight:600; color:#333;}
+    .category-articles {margin-top:20px;}
+    .article-item {padding:15px; border-bottom:1px solid #eee;}
+    .article-item:last-child {border-bottom:none;}
+    .article-title {font-weight:500; margin-bottom:8px; color:#333;}
+    .article-excerpt {font-size:0.95rem; color:#777; line-height:1.5;}
+    @media(max-width:768px){
+        .dashboard-container{flex-direction:column;}
+        .sidebar{width:100%; padding:15px 0;}
+        .nav-links{display:flex; overflow-x:auto; padding:0 10px;}
+        .nav-links li{margin:0 5px;}
+        .nav-links a{padding:10px 15px; white-space:nowrap;}
+        .main-content{padding:15px;}
+        .support-container{grid-template-columns:1fr;}
+    }
+</style>
+</head>
+<body>
+<div class="dashboard-container">
+    <div class="sidebar">
+        <div class="logo-container">
+            <div class="logo">Lodi<span>Pay</span></div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+            <li><a href="wallet.html"><i class="fas fa-wallet"></i> Wallet</a></li>
+            <li><a href="cards.html"><i class="fas fa-credit-card"></i> Cards</a></li>
+            <li><a href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a href="#" class="active"><i class="fas fa-question-circle"></i> Support</a></li>
+            <li><a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Support</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar"></div>
+                <div>
+                    <div id="user-name" style="font-weight:600;"></div>
+                    <div id="user-tier" style="font-size:0.8rem; color:#777;">Premium User</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="support-container">
+            <div class="support-content">
+                <div class="help-center">
+                    <div class="help-header">
+                        <h1 class="help-title">How can we help you?</h1>
+                        <p class="help-description">Find answers to common questions or get in touch with our support team</p>
+                    </div>
+                    
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" placeholder="Search for help articles...">
+                    </div>
+                    
+                    <div class="categories">
+                        <h2 class="categories-title">Browse Categories</h2>
+                        <div class="categories-grid">
+                            <div class="category-card account" data-category="account">
+                                <div class="category-icon">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <h3 class="category-title">Account Management</h3>
+                                <p class="category-desc">Learn how to manage your account settings, profile information, and security options.</p>
+                            </div>
+                            
+                            <div class="category-card transactions" data-category="transactions">
+                                <div class="category-icon">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
+                                <h3 class="category-title">Transactions</h3>
+                                <p class="category-desc">Get help with sending money, receiving payments, and understanding transaction history.</p>
+                            </div>
+                            
+                            <div class="category-card payments" data-category="payments">
+                                <div class="category-icon">
+                                    <i class="fas fa-credit-card"></i>
+                                </div>
+                                <h3 class="category-title">Payments & Cards</h3>
+                                <p class="category-desc">Information about linking cards, payment methods, and processing fees.</p>
+                            </div>
+                            
+                            <div class="category-card security" data-category="security">
+                                <div class="category-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <h3 class="category-title">Security</h3>
+                                <p class="category-desc">Learn about our security measures and how to protect your account.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Category Content Sections -->
+                    <div id="account-content" class="category-content">
+                        <div class="category-header">
+                            <div class="category-back">
+                                <i class="fas fa-arrow-left"></i> Back to Categories
+                            </div>
+                            <h2 class="category-content-title">Account Management</h2>
+                        </div>
+                        <div class="category-articles">
+                            <div class="article-item">
+                                <h3 class="article-title">How to update your profile information</h3>
+                                <p class="article-excerpt">Learn how to edit your personal details, contact information, and profile picture in your account settings.</p>
+                            </div>
+                            <div class="article-item">
+                                <h3 class="article-title">Changing your password</h3>
+                                <p class="article-excerpt">Step-by-step guide to resetting or changing your account password for enhanced security.</p>
+                            </div>
+                            <div class="article-item">
+                                <h3 class="article-title">Account verification process</h3>
+                                <p class="article-excerpt">Understanding the verification requirements and how to complete the identity verification process.</p>
+                            </div>
+                            <div class="article-item">
+                                <h3 class="article-title">Closing your account</h3>
+                                <p class="article-excerpt">Instructions on how to permanently close your LodiPay account and what happens to your data.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="transactions-content" class="category-content">
+                        <div class="category-header">
+                            <div class="category-back">
+                                <i class="fas fa-arrow-left"></i> Back to Categories
+                            </div>
+                            <h2 class="category-content-title">Transactions</h2>
+                        </div>
+                        <div class="category-articles">
+                            <div class="article-item">
+                                <h3 class="article-title">Sending money to contacts</h3>
+                                <p class="article-excerpt">How to quickly send money to friends and family using their phone numbers or email addresses.</p>
+                            </div>
+                            <div class="article-item">
+                                <h3 class="article-title">Understanding transaction statuses</h3>
+                                <p class="article-excerpt">Explanation of different transaction statuses and what they mean for your transfers.</p>
+                            </div>
+                            <div class="article-item">
+                                <h3 class="article-title">Refunding a transaction</h3>
+                                <p class="article-excerpt">Steps to request a refund for a transaction and the conditions that apply.</p>
+                            </div>
+                            <div class="article-item">
+                                <h3 class="article-title">Transaction limits and fees</h3>
+                                <p class="article-excerpt">Detailed information about daily, weekly, and monthly transaction limits based on your account tier.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="payments-content" class="category-content">
+                        <div class="category-header">
+                            <div class="category-back">
+                                <i class="fas fa-arrow-left"></i> Back to Categories
+                            </div>
+                            <h2 class="category-content-title">Payments & Cards</h2>
+                        </div>
+                        <div class="category-articles">
+                            <div class="article-item">
+                                <h3 class="article-title">Adding a new payment card</h3>
+                                <p class="article-excerpt">Guide to securely linking your debit or credit card to your LodiPay account.</p>
+                            </div>
+                            <div class="article-item">
+                                <h3 class="article-title">Processing international payments</h3>
+                                <p class="article-excerpt">How to send and receive payments in foreign currencies and understand exchange rates.</p>
+                            </div>
+                            <div class="article-item">
+                                <h3 class="article-title">Setting up automatic payments</h3>
+                                <p class="article-excerpt">Creating recurring payments for bills and subscriptions to save time and avoid late fees.</p>
+                            </div>
+                            <div class="article-item">
+                                <h3 class="article-title">Card security features</h3>
+                                <p class="article-excerpt">Overview of security measures for your linked cards and how to report lost or stolen cards.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="security-content" class="category-content">
+                        <div class="category-header">
+                            <div class="category-back">
+                                <i class="fas fa-arrow-left"></i> Back to Categories
+                            </div>
+                            <h2 class="category-content-title">Security</h2>
+                        </div>
+                        <div class="category-articles">
+                            <div class="article-item">
+                                <h3 class="article-title">Enabling two-factor authentication</h3>
+                                <p class="article-excerpt">Step-by-step instructions to add an extra layer of security to your account using 2FA.</p>
+                            </div>
+                            <div class="article-item">
+                                <h3 class="article-title">Recognizing phishing attempts</h3>
+                                <p class="article-excerpt">How to identify suspicious emails and messages that try to steal your account information.</p>
+                            </div>
+                            <div class="article-item">
+                                <h3 class="article-title">Device authorization and management</h3>
+                                <p class="article-excerpt">Managing authorized devices and revoking access to unfamiliar devices on your account.</p>
+                            </div>
+                            <div class="article-item">
+                                <h3 class="article-title">Security alerts and notifications</h3>
+                                <p class="article-excerpt">Understanding security notifications and how to customize your alert preferences.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-section">
+                        <h2 class="contact-title">Contact Us</h2>
+                        <div class="contact-options">
+                            <div class="contact-card chat">
+                                <div class="contact-icon">
+                                    <i class="fas fa-comments"></i>
+                                </div>
+                                <h3 class="contact-label">Live Chat</h3>
+                                <p class="contact-detail">Available 24/7</p>
+                                <button class="contact-btn">Start Chat</button>
+                            </div>
+                            
+                            <div class="contact-card email">
+                                <div class="contact-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <h3 class="contact-label">Email Support</h3>
+                                <p class="contact-detail">support@lodipay.com</p>
+                                <button class="contact-btn">Send Email</button>
+                            </div>
+                            
+                            <div class="contact-card phone">
+                                <div class="contact-icon">
+                                    <i class="fas fa-phone-alt"></i>
+                                </div>
+                                <h3 class="contact-label">Phone Support</h3>
+                                <p class="contact-detail">1-800-LODIPAY</p>
+                                <button class="contact-btn">Call Now</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-section">
+                        <h2 class="faq-title">Frequently Asked Questions</h2>
+                        <div class="faq-list">
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    How do I reset my password?
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>To reset your password, go to the login page and click "Forgot Password". Enter your email address and follow the instructions sent to your inbox. You can also change your password in the Settings section under Security.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    What are the transaction fees?
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>LodiPay charges a small fee for certain transactions. Domestic transfers are free for Premium users, while standard users pay ₱15 per transaction. International transfers have a 1% fee with a minimum of ₱100. Bills payments are free of charge.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    How long does it take to process transfers?
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Domestic transfers are processed instantly. International transfers typically take 1-3 business days. Bills payments are usually processed within 24 hours. Processing times may vary depending on the recipient's bank or service provider.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    Is my information secure?
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Absolutely. We use bank-level encryption to protect your data. All transactions are monitored for fraud, and we comply with international security standards. Your personal and financial information is never shared with third parties without your consent.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="support-sidebar">
+                <div class="knowledge-base">
+                    <h3 class="sidebar-title">Knowledge Base</h3>
+                    <div class="kb-item" data-kb="security">
+                        <div class="kb-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="kb-info">
+                            <div class="kb-title">Security Best Practices</div>
+                            <div class="kb-desc">Tips to keep your account safe</div>
+                        </div>
+                    </div>
+                    
+                    <div class="kb-item" data-kb="fees">
+                        <div class="kb-icon">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <div class="kb-info">
+                            <div class="kb-title">Understanding Fees</div>
+                            <div class="kb-desc">Complete fee structure breakdown</div>
+                        </div>
+                    </div>
+                    
+                    <div class="kb-item" data-kb="mobile">
+                        <div class="kb-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="kb-info">
+                            <div class="kb-title">Mobile App Guide</div>
+                            <div class="kb-desc">Using LodiPay on your mobile device</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feedback">
+                    <h3 class="feedback-title">Help Us Improve</h3>
+                    <p class="feedback-desc">Share your experience with our support team</p>
+                    <button class="feedback-btn" id="feedback-button">Submit Feedback</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

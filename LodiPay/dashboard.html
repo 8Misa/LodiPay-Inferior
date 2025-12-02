@@ -72,7 +72,6 @@
 </head>
 <body>
 <div class="dashboard-container">
-    <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo-container">
             <div class="logo">Lodi<span>Pay</span></div>
@@ -89,7 +88,6 @@
         </ul>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
         <div class="header">
             <h1>Dashboard</h1>
@@ -102,7 +100,6 @@
             </div>
         </div>
 
-        <!-- Stats Cards -->
         <div class="stats-container">
             <div class="stat-card balance">
                 <div class="stat-header">
@@ -134,7 +131,6 @@
             </div>
         </div>
 
-        <!-- Recent Transactions -->
         <div class="section-title">Recent Transactions</div>
         <div class="transactions-table">
             <table>
@@ -147,12 +143,10 @@
                     </tr>
                 </thead>
                 <tbody id="transactions-body">
-                    <!-- Dynamic rows go here -->
                 </tbody>
             </table>
         </div>
 
-        <!-- Quick Actions -->
         <div class="quick-actions">
             <div class="action-card send-money">
                 <div class="action-icon"><i class="fas fa-paper-plane"></i></div>
@@ -177,14 +171,5 @@
         </div>
     </div>
 </div>
-
-<script>
-  document.getElementById('logout-btn').addEventListener('click', function(e) {
-      e.preventDefault(); // prevent default anchor behavior
-      // Optionally, clear localStorage/session data here
-      window.location.href = 'login.html'; // redirect to login page
-  });
-</script>
-
 </body>
 </html>
