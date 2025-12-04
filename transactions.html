@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LodiPay - Transactions</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    * {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+    body {background-color:#f5f7fa; color:#333; min-height:100vh;}
+    .dashboard-container {display:flex; min-height:100vh;}
+    .sidebar {width:250px; background:linear-gradient(180deg,#08CB00 0%,#06A000 100%); color:white; padding:20px 0; box-shadow:3px 0 10px rgba(0,0,0,0.1); z-index:100;}
+    .logo-container {text-align:center; margin-bottom:30px; padding:0 20px;}
+    .logo {font-size:1.8rem; font-weight:700; color:white;}
+    .logo span {color:#FFD700;}
+    .nav-links {list-style:none; padding:0 15px;}
+    .nav-links li {margin-bottom:5px;}
+    .nav-links a {display:flex; align-items:center; padding:12px 15px; color:rgba(255,255,255,0.9); text-decoration:none; border-radius:8px; transition:all 0.3s ease;}
+    .nav-links a:hover, .nav-links a.active {background:rgba(255,255,255,0.2); color:white;}
+    .nav-links i {margin-right:12px; width:20px; text-align:center;}
+    .main-content {flex:1; padding:20px; overflow-y:auto;}
+    .header {display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; padding-bottom:20px; border-bottom:1px solid #eee;}
+    .header h1 {color:#333; font-size:1.8rem;}
+    .user-info {display:flex; align-items:center; gap:15px;}
+    .user-avatar {width:40px; height:40px; border-radius:50%; background:#08CB00; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;}
+    .section-title {font-size:1.5rem; margin-bottom:20px; color:#333; display:flex; align-items:center; gap:10px;}
+    .filters {background:white; border-radius:12px; padding:20px; box-shadow:0 4px 15px rgba(0,0,0,0.05); margin-bottom:30px;}
+    .filter-row {display:flex; flex-wrap:wrap; gap:15px; margin-bottom:15px; align-items:center;}
+    .filter-group {flex:1; min-width:200px;}
+    .filter-group label {display:block; margin-bottom:8px; font-weight:500; color:#555;}
+    .filter-group select, .filter-group input {width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; font-size:1rem;}
+    .filter-buttons {display:flex; gap:10px; margin-top:15px;}
+    .btn {padding:12px 20px; border-radius:8px; font-weight:600; cursor:pointer; transition:all 0.3s ease;}
+    .btn-primary {background:#08CB00; color:white; border:none;}
+    .btn-secondary {background:#f5f7fa; color:#333; border:1px solid #ddd;}
+    .btn:hover {opacity:0.9; transform:translateY(-2px);}
+    .transactions-table {background:white; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.05); overflow:hidden; margin-bottom:30px;}
+    table {width:100%; border-collapse:collapse;}
+    th, td {padding:15px 20px; text-align:left; border-bottom:1px solid #eee;}
+    th {background:#f8f9fa; color:#555; font-weight:600;}
+    tr:last-child td {border-bottom:none;}
+    tr:hover td {background:#f8f9fa;}
+    .transaction-type {display:flex; align-items:center; gap:10px;}
+    .type-icon {width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.9rem;}
+    .sent .type-icon {background:rgba(234,67,53,0.1); color:#ea4335;}
+    .received .type-icon {background:rgba(52,168,83,0.1); color:#34a853;}
+    .bills .type-icon {background:rgba(251,188,5,0.1); color:#fbbc05;}
+    .transaction-amount.sent {color:#ea4335; font-weight:600;}
+    .transaction-amount.received {color:#34a853; font-weight:600;}
+    .transaction-status {padding:5px 12px; border-radius:20px; font-size:0.85rem; font-weight:500;}
+    .status-completed {background:rgba(52,168,83,0.1); color:#34a853;}
+    .status-pending {background:rgba(251,188,5,0.1); color:#fbbc05;}
+    .status-failed {background:rgba(234,67,53,0.1); color:#ea4335;}
+    .pagination {display:flex; justify-content:center; gap:10px; margin-top:20px;}
+    .page-btn {width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:white; border:1px solid #ddd; cursor:pointer; font-weight:500;}
+    .page-btn.active {background:#08CB00; color:white; border-color:#08CB00;}
+    .page-btn:hover:not(.active) {background:#f5f7fa;}
+    .no-transactions {text-align:center; padding:40px; color:#777;}
+    .no-transactions i {font-size:3rem; margin-bottom:20px; color:#ddd;}
+    .no-transactions h3 {margin-bottom:10px; color:#555;}
+    @media(max-width:768px){
+        .dashboard-container{flex-direction:column;}
+        .sidebar{width:100%; padding:15px 0;}
+        .nav-links{display:flex; overflow-x:auto; padding:0 10px;}
+        .nav-links li{margin:0 5px;}
+        .nav-links a{padding:10px 15px; white-space:nowrap;}
+        .main-content{padding:15px;}
+        .filter-row{flex-direction:column; align-items:stretch;}
+        .filter-group{min-width:100%;}
+    }
+</style>
+</head>
+<body>
+<div class="dashboard-container">
+    <div class="sidebar">
+        <div class="logo-container">
+            <div class="logo">Lodi<span>Pay</span></div>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="header">
+            <h1>Transactions</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar"></div>
+                <div>
+                    <div id="user-name" style="font-weight:600;"></div>
+                    <div id="user-tier" style="font-size:0.8rem; color:#777;">Premium User</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-filter"></i>
+            Filter Transactions
+        </div>
+
+        <div class="filters">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="date-from">From Date</label>
+                    <input type="date" id="date-from">
+                </div>
+                <div class="filter-group">
+                    <label for="date-to">To Date</label>
+                    <input type="date" id="date-to">
+                </div>
+                <div class="filter-group">
+                    <label for="transaction-type">Transaction Type</label>
+                    <select id="transaction-type">
+                        <option value="all">All Types</option>
+                        <option value="sent">Sent</option>
+                        <option value="received">Received</option>
+                        <option value="bills">Bills Payment</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="status">Status</label>
+                    <select id="status">
+                        <option value="all">All Statuses</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+                        <option value="failed">Failed</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="search">Search</label>
+                    <input type="text" id="search" placeholder="Search by description or amount">
+                </div>
+            </div>
+            <div class="filter-buttons">
+                <button class="btn btn-primary"><i class="fas fa-search"></i> Apply Filters</button>
+                <button class="btn btn-secondary"><i class="fas fa-redo"></i> Reset</button>
+            </div>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-list"></i>
+            Transaction History
+        </div>
+
+        <div class="transactions-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Transaction</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="transactions-body">
+                    <tr>
+                        <td colspan="4">
+                            <div class="no-transactions">
+                                <i class="fas fa-exchange-alt"></i>
+                                <h3>No Transactions Found</h3>
+                                <p>You don't have any transactions matching your filters</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

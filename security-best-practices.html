@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LodiPay - Security Best Practices</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    * {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+    body {background-color:#f5f7fa; color:#333; min-height:100vh;}
+    .dashboard-container {display:flex; min-height:100vh;}
+    .sidebar {width:250px; background:linear-gradient(180deg,#08CB00 0%,#06A000 100%); color:white; padding:20px 0; box-shadow:3px 0 10px rgba(0,0,0,0.1); z-index:100;}
+    .logo-container {text-align:center; margin-bottom:30px; padding:0 20px;}
+    .logo {font-size:1.8rem; font-weight:700; color:white;}
+    .logo span {color:#FFD700;}
+    .nav-links {list-style:none; padding:0 15px;}
+    .nav-links li {margin-bottom:5px;}
+    .nav-links a {display:flex; align-items:center; padding:12px 15px; color:rgba(255,255,255,0.9); text-decoration:none; border-radius:8px; transition:all 0.3s ease;}
+    .nav-links a:hover, .nav-links a.active {background:rgba(255,255,255,0.2); color:white;}
+    .nav-links i {margin-right:12px; width:20px; text-align:center;}
+    .main-content {flex:1; padding:20px; overflow-y:auto;}
+    .header {display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; padding-bottom:20px; border-bottom:1px solid #eee;}
+    .header h1 {color:#333; font-size:1.8rem;}
+    .user-info {display:flex; align-items:center; gap:15px;}
+    .user-avatar {width:40px; height:40px; border-radius:50%; background:#08CB00; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;}
+    .breadcrumb {display:flex; align-items:center; gap:10px; margin-bottom:20px; color:#777;}
+    .breadcrumb a {color:#08CB00; text-decoration:none;}
+    .breadcrumb a:hover {text-decoration:underline;}
+    .guide-container {background:white; border-radius:12px; padding:30px; box-shadow:0 4px 15px rgba(0,0,0,0.05);}
+    .guide-header {margin-bottom:30px; text-align:center;}
+    .guide-title {font-size:2rem; font-weight:700; color:#333; margin-bottom:15px;}
+    .guide-description {color:#777; font-size:1.1rem; max-width:700px; margin:0 auto 20px; line-height:1.6;}
+    .practices-container {margin-bottom:40px;}
+    .practices-grid {display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:25px;}
+    .practice-card {background:#f8f9fa; border-radius:12px; padding:25px; transition:all 0.3s ease; border:1px solid #eee;}
+    .practice-card:hover {transform:translateY(-5px); box-shadow:0 6px 15px rgba(0,0,0,0.08); border-color:#08CB00;}
+    .practice-icon {width:50px; height:50px; border-radius:12px; background:rgba(8,203,0,0.1); color:#08CB00; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin-bottom:20px;}
+    .practice-title {font-size:1.3rem; font-weight:600; margin-bottom:15px; color:#333;}
+    .practice-description {color:#777; line-height:1.6; margin-bottom:20px;}
+    .practice-tips {margin-top:15px; padding-left:20px;}
+    .practice-tips li {margin-bottom:10px; color:#555;}
+    .security-stats {display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; margin-bottom:40px;}
+    .stat-card {background:linear-gradient(135deg,#08CB00 0%,#06A000 100%); border-radius:12px; padding:25px; color:white; text-align:center;}
+    .stat-number {font-size:2.5rem; font-weight:700; margin-bottom:10px;}
+    .stat-label {font-size:1.1rem; opacity:0.9;}
+    .warning-section {background:#fff8e6; border-left:4px solid #fbbc05; padding:20px; border-radius:0 8px 8px 0; margin-bottom:30px;}
+    .warning-title {font-size:1.3rem; font-weight:600; color:#333; margin-bottom:10px; display:flex; align-items:center; gap:10px;}
+    .warning-content {color:#555; line-height:1.6;}
+    .cta-section {text-align:center; padding:40px 20px; background:#f8f9fa; border-radius:12px; margin-bottom:30px;}
+    .cta-title {font-size:1.8rem; font-weight:700; margin-bottom:15px; color:#333;}
+    .cta-description {color:#777; margin-bottom:25px; max-width:600px; margin-left:auto; margin-right:auto; line-height:1.6;}
+    .btn {padding:12px 30px; border-radius:8px; font-weight:600; cursor:pointer; transition:all 0.3s ease; border:none; font-size:1rem;}
+    .btn-primary {background:#08CB00; color:white;}
+    .btn-primary:hover {opacity:0.9; transform:translateY(-2px);}
+    @media(max-width:768px){
+        .dashboard-container{flex-direction:column;}
+        .sidebar{width:100%; padding:15px 0;}
+        .nav-links{display:flex; overflow-x:auto; padding:0 10px;}
+        .nav-links li{margin:0 5px;}
+        .nav-links a{padding:10px 15px; white-space:nowrap;}
+        .main-content{padding:15px;}
+        .practices-grid{grid-template-columns:1fr;}
+        .security-stats{grid-template-columns:1fr;}
+    }
+</style>
+</head>
+<body>
+<div class="dashboard-container">
+    <div class="sidebar">
+        <div class="logo-container">
+            <div class="logo">Lodi<span>Pay</span></div>
+        </div>
+        </div>
+    <div class="main-content">
+        <div class="header">
+            <h1>Security Best Practices</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar"></div>
+                <div>
+                    <div id="user-name" style="font-weight:600;"></div>
+                    <div id="user-tier" style="font-size:0.8rem; color:#777;">Premium User</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="support.html">Support</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Security Best Practices</span>
+        </div>
+
+        <div class="guide-container">
+            <div class="guide-header">
+                <h1 class="guide-title">Keep Your Account Secure</h1>
+                <p class="guide-description">Follow these essential security practices to protect your LodiPay account and financial information from unauthorized access.</p>
+            </div>
+
+            <div class="security-stats">
+                <div class="stat-card">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">Account Security Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Fraud Monitoring</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Reported Breaches</div>
+                </div>
+            </div>
+
+            <div class="warning-section">
+                <h3 class="warning-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Important Security Notice
+                </h3>
+                <p class="warning-content">LodiPay will never ask for your password, PIN, or security codes via email or phone. If you receive such requests, do not respond and report them immediately to our support team.</p>
+            </div>
+
+            <div class="practices-container">
+                <div class="practices-grid">
+                    <div class="practice-card">
+                        <div class="practice-icon">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <h3 class="practice-title">Use Strong Passwords</h3>
+                        <p class="practice-description">Create unique passwords with at least 12 characters including uppercase, lowercase, numbers, and symbols.</p>
+                        <ul class="practice-tips">
+                            <li>Never reuse passwords across accounts</li>
+                            <li>Change passwords every 90 days</li>
+                            <li>Use a password manager for secure storage</li>
+                        </ul>
+                    </div>
+
+                    <div class="practice-card">
+                        <div class="practice-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3 class="practice-title">Enable Two-Factor Authentication</h3>
+                        <p class="practice-description">Add an extra layer of security by requiring a second form of verification for login attempts.</p>
+                        <ul class="practice-tips">
+                            <li>Use authenticator apps instead of SMS</li>
+                            <li>Backup your recovery codes</li>
+                            <li>Enable 2FA on all important accounts</li>
+                        </ul>
+                    </div>
+
+                    <div class="practice-card">
+                        <div class="practice-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3 class="practice-title">Secure Your Devices</h3>
+                        <p class="practice-description">Protect all devices used to access your LodiPay account with up-to-date security software.</p>
+                        <ul class="practice-tips">
+                            <li>Keep OS and apps updated</li>
+                            <li>Use device encryption</li>
+                            <li>Lock devices with strong passcodes</li>
+                        </ul>
+                    </div>
+
+                    <div class="practice-card">
+                        <div class="practice-icon">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                        <h3 class="practice-title">Be Cautious With Networks</h3>
+                        <p class="practice-description">Avoid accessing sensitive financial information on public Wi-Fi networks or unsecured connections.</p>
+                        <ul class="practice-tips">
+                            <li>Use VPN on public networks</li>
+                            <li>Prefer cellular data for transactions</li>
+                            <li>Verify network authenticity</li>
+                        </ul>
+                    </div>
+
+                    <div class="practice-card">
+                        <div class="practice-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h3 class="practice-title">Identify Phishing Attempts</h3>
+                        <p class="practice-description">Learn to recognize fraudulent emails, texts, and calls attempting to steal your information.</p>
+                        <ul class="practice-tips">
+                            <li>Check sender email addresses carefully</li>
+                            <li>Never click suspicious links</li>
+                            <li>Verify requests through official channels</li>
+                        </ul>
+                    </div>
+
+                    <div class="practice-card">
+                        <div class="practice-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <h3 class="practice-title">Monitor Account Activity</h3>
+                        <p class="practice-description">Regularly review your transaction history and account settings for any unauthorized changes.</p>
+                        <ul class="practice-tips">
+                            <li>Enable transaction alerts</li>
+                            <li>Review statements monthly</li>
+                            <li>Report suspicious activity immediately</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cta-section">
+                <h2 class="cta-title">Enhance Your Security Now</h2>
+                <p class="cta-description">Take action to protect your account with our built-in security features.</p>
+                <button class="btn btn-primary" id="security-setup">Setup Security Features</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

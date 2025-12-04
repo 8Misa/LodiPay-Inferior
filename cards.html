@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LodiPay - Cards</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    * {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+    body {background-color:#f5f7fa; color:#333; min-height:100vh;}
+    .dashboard-container {display:flex; min-height:100vh;}
+    .sidebar {width:250px; background:linear-gradient(180deg,#08CB00 0%,#06A000 100%); color:white; padding:20px 0; box-shadow:3px 0 10px rgba(0,0,0,0.1); z-index:100;}
+    .logo-container {text-align:center; margin-bottom:30px; padding:0 20px;}
+    .logo {font-size:1.8rem; font-weight:700; color:white;}
+    .logo span {color:#FFD700;}
+    .main-content {flex:1; padding:20px; overflow-y:auto;}
+    .header {display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; padding-bottom:20px; border-bottom:1px solid #eee;}
+    .header h1 {color:#333; font-size:1.8rem;}
+    .user-info {display:flex; align-items:center; gap:15px;}
+    .user-avatar {width:40px; height:40px; border-radius:50%; background:#08CB00; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;}
+    .cards-grid {display:grid; grid-template-columns:repeat(auto-fit,minmax(350px,1fr)); gap:25px; margin-bottom:30px;}
+    .card {background:linear-gradient(135deg,#08CB00 0%,#06A000 100%); border-radius:12px; padding:25px; color:white; box-shadow:0 4px 15px rgba(0,0,0,0.1); position:relative; height:220px;}
+    .card-header {display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;}
+    .card-number {font-size:1.4rem; letter-spacing:2px; margin-bottom:25px; font-family:monospace;}
+    .card-details {display:flex; justify-content:space-between;}
+    .card-info {display:flex; flex-direction:column;}
+    .card-label {font-size:0.8rem; opacity:0.8; margin-bottom:5px;}
+    .card-value {font-size:1rem; font-weight:500;}
+    .card-actions {position:absolute; top:20px; right:20px; display:flex; gap:10px;}
+    .card-action-btn {width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.3s ease; border:none; color:white;}
+    .card-action-btn:hover {background:rgba(255,255,255,0.3);}
+    .add-card-section {background:white; border-radius:12px; padding:30px; box-shadow:0 4px 15px rgba(0,0,0,0.05); text-align:center;}
+    .add-card-content {max-width:500px; margin:0 auto;}
+    .btn-add-card {padding:12px 30px; background:#08CB00; color:white; border:none; border-radius:8px; font-size:1rem; font-weight:600; cursor:pointer; transition:all 0.3s ease; display:inline-flex; align-items:center; gap:10px;}
+    .btn-add-card:hover {opacity:0.9; transform:translateY(-2px); box-shadow:0 4px 10px rgba(8,203,0,0.3);}
+</style>
+</head>
+<body>
+<div class="dashboard-container">
+    <div class="sidebar">
+        <div class="logo-container">
+            <div class="logo">Lodi<span>Pay</span></div>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="header">
+            <h1>Cards</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar"></div>
+                <div>
+                    <div id="user-name" style="font-weight:600;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cards-grid" id="cardsGrid"></div>
+    </div>
+</div>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const supabaseUrl = "https://mnekynmsgleysmfjtdbh.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uZWt5bm1zZ2xleXNtZmp0ZGJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MTAxMTUsImV4cCI6MjA4MDE4NjExNX0.l0h5Wlqlvzve5Bs8sHIeVCcRuikRrTr2dRYpkdYLSdo"; // <-- put your anon key here
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+const cardsGrid = document.getElementById("cardsGrid");
+const userName = document.getElementById("user-name");
+const userAvatar = document.getElementById("user-avatar");
+
+async function loadUser() {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error || !user) {
+        userName.textContent = "Guest";
+        userAvatar.textContent = "G";
+        return;
+    }
+    userName.textContent = user.user_metadata.full_name || "User";
+    userAvatar.textContent = user.user_metadata.full_name ? user.user_metadata.full_name[0].toUpperCase() : "U";
+}
+
+async function fetchCards() {
+    const { data, error } = await supabase.from("cards").select("*").order("id", { ascending: true });
+    if (error) {
+        console.error(error.message);
+        return [];
+    }
+    return data;
+}
+
+async function renderCards() {
+    const cards = await fetchCards();
+    cardsGrid.innerHTML = "";
+
+    if (cards.length === 0) {
+        cardsGrid.innerHTML = `
+        <div class="add-card-section">
+            <div class="add-card-content">
+                <i class="fas fa-plus-circle"></i>
+                <h2>No Cards Added Yet</h2>
+                <p>Securely link your debit or credit cards to enjoy seamless transactions.</p>
+                <button class="btn-add-card" id="addCardBtn"><i class="fas fa-plus"></i> Add New Card</button>
+            </div>
+        </div>
+        `;
+        document.getElementById("addCardBtn").addEventListener("click", addCard);
+        return;
+    }
+
+    cards.forEach(card => {
+        const cardElement = document.createElement("div");
+        cardElement.className = "card";
+        cardElement.innerHTML = `
+            <div class="card-header">
+                <div class="card-type">${card.type}</div>
+                <div class="card-network">${card.network}</div>
+            </div>
+            <div class="card-number">${card.number}</div>
+            <div class="card-details">
+                <div class="card-info">
+                    <div class="card-label">Card Holder</div>
+                    <div class="card-value">${card.holder}</div>
+                </div>
+                <div class="card-info">
+                    <div class="card-label">Expiry</div>
+                    <div class="card-value">${card.expiry}</div>
+                </div>
+            </div>
+            <div class="card-actions">
+                <button class="card-action-btn" onclick="removeCard(${card.id})"><i class="fas fa-trash-alt"></i></button>
+                <button class="card-action-btn" onclick="editCard(${card.id})"><i class="fas fa-edit"></i></button>
+            </div>
+        `;
+        cardsGrid.appendChild(cardElement);
+    });
+}
+
+async function addCard() {
+    const cardData = {
+        type: "Debit",
+        network: "VISA",
+        number: "**** **** **** 1234",
+        holder: userName.textContent,
+        expiry: "12/28"
+    };
+    const { error } = await supabase.from("cards").insert([cardData]);
+    if (error) return alert(error.message);
+    renderCards();
+}
+
+async function removeCard(id) {
+    if (!confirm("Are you sure?")) return;
+    const { error } = await supabase.from("cards").delete().eq("id", id);
+    if (error) return alert(error.message);
+    renderCards();
+}
+
+async function editCard(id) {
+    const newNumber = prompt("Enter new card number:");
+    if (!newNumber) return;
+    const { error } = await supabase.from("cards").update({ number: newNumber }).eq("id", id);
+    if (error) return alert(error.message);
+    renderCards();
+}
+
+async function init() {
+    await loadUser();
+    await renderCards();
+}
+
+init();
+</script>
+</body>
+</html>
