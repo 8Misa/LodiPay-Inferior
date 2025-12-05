@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LodiPay - Add Funds</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* --- Basic styles (Consistent LodiPay Theme) --- */
+* {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+body {background-color:#f5f7fa; color:#333; min-height:100vh;}
+.dashboard-container {display:flex; min-height:100vh;}
+/* LodiPay Green Theme */
+.sidebar {width:250px; background:linear-gradient(180deg,#08CB00 0%,#06A000 100%); color:white; padding:20px 0; box-shadow:3px 0 10px rgba(0,0,0,0.1);}
+.logo-container {text-align:center; margin-bottom:30px; padding:0 20px;}
+.logo {font-size:1.8rem; font-weight:700; color:white;}
+.logo span {color:#FFD700;}
+.nav-links {list-style:none; padding:0 15px;}
+.nav-links li {margin-bottom:5px;}
+.nav-links a {display:flex; align-items:center; padding:12px 15px; color:rgba(255,255,255,0.9); text-decoration:none; border-radius:8px; transition:all 0.3s ease;}
+.nav-links a:hover {background:rgba(255,255,255,0.2); color:white;}
+.nav-links i {margin-right:12px; width:20px; text-align:center;}
+.main-content {flex:1; padding:20px; overflow-y:auto;}
+.header {display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; padding-bottom:20px; border-bottom:1px solid #eee;}
+.header h1 {color:#333; font-size:1.8rem;}
+.user-info {display:flex; align-items:center; gap:15px;}
+.user-avatar {width:40px; height:40px; border-radius:50%; background:#08CB00; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;}
+
+/* --- Add Funds Form Specific Styles --- */
+.funds-card {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+.funds-card h2 {
+    font-size: 1.5rem;
+    color: #06A000;
+    margin-bottom: 25px;
+    text-align: center;
+}
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
+.input-field { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+.input-field:focus { border-color: #08CB00; outline: none; box-shadow: 0 0 0 3px rgba(8, 203, 0, 0.2); }
+.topup-button { width: 100%; padding: 15px; background-color: #08CB00; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: background-color 0.3s ease, transform 0.1s ease; }
+.topup-button:hover { background-color: #06A000; }
+.topup-button:active { transform: scale(0.99); }
+
+/* Card Selection Grid */
+.card-selection-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; }
+.card-option { border: 2px solid #ddd; border-radius: 10px; padding: 15px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: space-between; background: #f9f9f9; }
+.card-option:hover { border-color: #08CB00; background: #f0fff0; }
+.card-info-text { flex-grow: 1; }
+.card-option input[type="radio"] { margin-left: 10px; transform: scale(1.2); accent-color: #08CB00; }
+.card-type-text { font-weight: 600; color: #333; }
+.card-last4 { font-size: 0.9rem; color: #777; }
+.card-placeholder { text-align: center; padding: 40px 20px; color: #777; border: 1px dashed #ddd; }
+
+/* Message Box */
+.message-box { text-align: center; padding: 15px; border-radius: 8px; margin-top: 20px; display: none; font-weight: 500; }
+.success-message { background: #e6ffe6; border: 1px solid #08CB00; color: #06A000; }
+.error-message { background: #ffe6e6; border: 1px solid #ff0000; color: #ff0000; }
+
+@media(max-width:768px){
+    .dashboard-container{flex-direction:column;}
+    .sidebar{width:100%; padding:15px 0;}
+    .nav-links{display:flex; overflow-x:auto; padding:0 10px;}
+    .nav-links li{margin:0 5px;}
+    .nav-links a{padding:10px 15px; white-space:nowrap;}
+    .main-content{padding:15px;}
+    .card-selection-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo-container">
+            <div class="logo">Lodi<span>Pay</span></div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="wallet.html" class="active"><i class="fas fa-wallet"></i> Wallet</a></li>
+            <li><a href="transfer.html"><i class="fas fa-paper-plane"></i> Send Money</a></li>
+            <li><a href="transaction.html"><i class="fas fa-history"></i> History</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Add Funds</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <div>
+                    <div id="user-name" style="font-weight:600;">Loading User...</div>
+                    <div id="user-tier" style="font-size:0.8rem; color:#777;">Standard User</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="funds-card">
+            <h2>Top-Up Main Wallet</h2>
+            <form id="topup-form">
+                
+                <div class="form-group">
+                    <label>Select Funding Source</label>
+                    <div class="card-selection-grid" id="card-selection-container">
+                        <div class="card-placeholder">
+                            <i class="fas fa-spinner fa-spin"></i> Loading linked cards...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="amount">Amount to Add (₱)</label>
+                    <input type="number" id="amount" class="input-field" required min="1.00" step="0.01" placeholder="e.g., 1000.00">
+                </div>
+                
+                <button type="submit" class="topup-button">Securely Add Funds</button>
+
+                <div id="status-message" class="message-box success-message">
+                    <span id="message-icon"></span>
+                    <span id="message-text"></span>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+// --- SUPABASE CONFIG ---
+const SUPABASE_URL = 'https://YOUR_SUPABASE_URL.supabase.co';
+const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const topupForm = document.getElementById("topup-form");
+const statusMessageEl = document.getElementById("status-message");
+const messageTextEl = document.getElementById("message-text");
+const messageIconEl = document.getElementById("message-icon");
+const userNameEl = document.getElementById('user-name');
+const userAvatarEl = document.getElementById('user-avatar');
+const userTierEl = document.getElementById('user-tier');
+const cardContainer = document.getElementById('card-selection-container');
+
+let currentUser = null;
+
+// Currency Formatter
+const formatCurrency = (amount) => `₱${Number(amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+
+// Show Message
+function showMessage(type, message) {
+    statusMessageEl.className = 'message-box ' + (type === 'success' ? 'success-message' : 'error-message');
+    messageTextEl.textContent = message;
+    messageIconEl.innerHTML = type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>';
+    statusMessageEl.style.display = 'block';
+    setTimeout(() => { statusMessageEl.style.display = 'none'; }, 5000);
+}
+
+// --- Initialize User ---
+async function initUser() {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error || !user) {
+        console.error(error);
+        return;
+    }
+    currentUser = user;
+
+    // Load user profile
+    const { data, error: profileError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', currentUser.id)
+        .single();
+
+    let profile;
+    if (!data) {
+        // create default profile if not exist
+        const { data: insertData } = await supabase.from('users').insert([{
+            id: currentUser.id,
+            fullName: currentUser.email || 'User',
+            tier: 'Standard User',
+            mainWallet: 0,
+            cards: []
+        }]).select().single();
+        profile = insertData;
+    } else {
+        profile = data;
+    }
+
+    userNameEl.textContent = profile.fullName;
+    userAvatarEl.textContent = profile.fullName.charAt(0).toUpperCase();
+    userTierEl.textContent = profile.tier;
+
+    renderCardOptions(profile.cards || []);
+}
+
+// Render Cards
+function renderCardOptions(cards) {
+    cardContainer.innerHTML = '';
+    if (!cards.length) {
+        cardContainer.innerHTML = '<div class="card-placeholder"><i class="fas fa-exclamation-circle"></i> No cards linked. Please link a card in your Wallet view.</div>';
+        return;
+    }
+
+    cards.forEach((card, index) => {
+        const cardOption = document.createElement('label');
+        cardOption.className = 'card-option';
+        cardOption.setAttribute('for', `card-${index}`);
+        cardOption.innerHTML = `
+            <div class="card-info-text">
+                <div class="card-type-text">${card.type || 'Debit Card'}</div>
+                <div class="card-last4">${card.network || 'Visa'} ending in **** ${card.last4 || '0000'}</div>
+            </div>
+            <input type="radio" id="card-${index}" name="selectedCard" value="${index}" ${index===0?'checked':''}>
+        `;
+        cardContainer.appendChild(cardOption);
+    });
+}
+
+// --- Handle Top-Up ---
+topupForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!currentUser) return showMessage('error', "User not signed in.");
+
+    const amount = parseFloat(document.getElementById('amount').value);
+    const selectedCardIndex = document.querySelector('input[name="selectedCard"]:checked')?.value;
+
+    if (!amount || amount <= 0) return showMessage('error', "Enter a valid amount.");
+    if (selectedCardIndex === undefined) return showMessage('error', "Select a card.");
+
+    const { data: userData, error: userError } = await supabase.from('users').select('*').eq('id', currentUser.id).single();
+    if (userError || !userData) return showMessage('error', "User profile not found.");
+
+    const card = userData.cards[selectedCardIndex];
+    const newBalance = (userData.mainWallet || 0) + amount;
+
+    // Transaction
+    const { error: updateError } = await supabase.from('users').update({ mainWallet: newBalance }).eq('id', currentUser.id);
+    if (updateError) return showMessage('error', "Failed to update balance.");
+
+    // Log transaction
+    await supabase.from('transactions').insert([{
+        user_id: currentUser.id,
+        type: 'Top-Up',
+        amount,
+        status: 'Completed',
+        date: new Date().toISOString(),
+        description: `Funded from ${card.network} ending in ${card.last4}`
+    }]);
+
+    showMessage('success', `${formatCurrency(amount)} successfully added to your Main Wallet!`);
+    document.getElementById('amount').value = '';
+});
+
+initUser();
+</script>
+</body>
+</html>
