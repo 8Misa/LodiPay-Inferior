@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LodiPay - Send Money</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* --- Basic styles (Copied from Dashboard for consistency) --- */
+* {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+body {background-color:#f5f7fa; color:#333; min-height:100vh;}
+.dashboard-container {display:flex; min-height:100vh;}
+/* LodiPay Green Theme */
+.sidebar {width:250px; background:linear-gradient(180deg,#08CB00 0%,#06A000 100%); color:white; padding:20px 0; box-shadow:3px 0 10px rgba(0,0,0,0.1);}
+.logo-container {text-align:center; margin-bottom:30px; padding:0 20px;}
+.logo {font-size:1.8rem; font-weight:700; color:white;}
+.logo span {color:#FFD700;}
+.nav-links {list-style:none; padding:0 15px;}
+.nav-links li {margin-bottom:5px;}
+.nav-links a {display:flex; align-items:center; padding:12px 15px; color:rgba(255,255,255,0.9); text-decoration:none; border-radius:8px; transition:all 0.3s ease;}
+.nav-links a:hover, .nav-links a.active {background:rgba(255,255,255,0.2); color:white;}
+.nav-links i {margin-right:12px; width:20px; text-align:center;}
+.main-content {flex:1; padding:20px; overflow-y:auto;}
+.header {display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; padding-bottom:20px; border-bottom:1px solid #eee;}
+.header h1 {color:#333; font-size:1.8rem;}
+.user-info {display:flex; align-items:center; gap:15px;}
+.user-avatar {width:40px; height:40px; border-radius:50%; background:#08CB00; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;}
+
+/* --- Transfer Form Specific Styles --- */
+.transfer-card {
+    max-width: 500px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+.transfer-card h2 {
+    font-size: 1.5rem;
+    color: #06A000;
+    margin-bottom: 25px;
+    text-align: center;
+}
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+.form-group input, .form-group textarea, .form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    border-color: #08CB00;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(8, 203, 0, 0.2);
+}
+.transfer-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #08CB00;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+.transfer-button:hover {
+    background-color: #06A000;
+}
+.transfer-button:active {
+    transform: scale(0.99);
+}
+
+.success-message {
+    text-align: center;
+    padding: 20px;
+    background: #e6ffe6;
+    border: 1px solid #08CB00;
+    color: #06A000;
+    border-radius: 8px;
+    margin-top: 20px;
+    display: none; /* Hidden by default */
+}
+
+@media(max-width:768px){
+    .dashboard-container{flex-direction:column;}
+    .sidebar{width:100%; padding:15px 0;}
+    .nav-links{display:flex; overflow-x:auto; padding:0 10px;}
+    .nav-links li{margin:0 5px;}
+    .nav-links a{padding:10px 15px; white-space:nowrap;}
+    .main-content{padding:15px;}
+}
+</style>
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo-container">
+            <div class="logo">Lodi<span>Pay</span></div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#" class="active"><i class="fas fa-paper-plane"></i> Send Money</a></li>
+            <li><a href="cards.html"><i class="fas fa-credit-card"></i> Cards</a></li>
+            <li><a href="transaction.html"><i class="fas fa-history"></i> History</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Send Money</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <div>
+                    <div id="user-name" style="font-weight:600;">Lodi User</div>
+                    <div id="user-tier" style="font-size:0.8rem; color:#777;">Standard User</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="transfer-card">
+            <h2>New Fund Transfer</h2>
+            <form id="transfer-form">
+                <div class="form-group">
+                    <label for="recipient-id">Recipient ID / Account No.</label>
+                    <input type="text" id="recipient-id" required placeholder="e.g., U-123456 or 0917xxxxxxx">
+                </div>
+                
+                <div class="form-group">
+                    <label for="amount">Amount (₱)</label>
+                    <input type="number" id="amount" required min="1.00" step="0.01" placeholder="e.g., 500.00">
+                </div>
+                
+                <div class="form-group">
+                    <label for="note">Note (Optional)</label>
+                    <textarea id="note" rows="3" placeholder="Lunch money, Bill payment, etc."></textarea>
+                </div>
+                
+                <button type="submit" class="transfer-button">Confirm Transfer</button>
+
+                <div id="success-message" class="success-message">
+                    <i class="fas fa-check-circle"></i> Transfer initiated successfully!
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Logic and Supabase Integration -->
+<script type="module"> 
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+// Global Supabase configuration from the previous file
+const supabaseUrl = "https://mnekynmsgleysmfjtdbh.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uZWt5bm1zZ2xleXNtZmp0ZGJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MTAxMTUsImV4cCI6MjA4MDE4NjExNX0.l0h5Wlqlvzve5Bs8sHIeVCcRuikRrTr2dRYpkdYLSdo";
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// DOM Elements
+const transferForm = document.getElementById("transfer-form");
+const successMessageEl = document.getElementById("success-message");
+const userNameEl = document.getElementById("user-name");
+const userAvatarEl = document.getElementById("user-avatar");
+const userTierEl = document.getElementById("user-tier");
+
+// Helper function for formatting currency (not strictly needed here but good practice)
+const formatCurrency = (amount) => {
+    return `₱${Number(amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+};
+
+// --- USER FUNCTION (for displaying user info) ---
+async function loadUser() {
+    const { data: { user }, error } = await supabase.auth.getUser();
+
+    if (error || !user) {
+        userNameEl.textContent = "Guest";
+        userAvatarEl.textContent = "G";
+        if (userTierEl) userTierEl.textContent = "Free User";
+        return null;
+    }
+
+    const fullName = user.user_metadata?.full_name || "LodiPay User";
+    const tier = user.user_metadata?.tier || "Standard User";
+
+    userNameEl.textContent = fullName;
+    userAvatarEl.textContent = fullName[0]?.toUpperCase() || 'U';
+    if (userTierEl) userTierEl.textContent = tier;
+
+    return user;
+}
+
+// --- TRANSFER LOGIC ---
+async function initiateTransfer(recipientId, amount, note) {
+    if (amount <= 0) {
+        alert("Transfer amount must be greater than zero.");
+        return;
+    }
+
+    // --- Mock API Call to Supabase ---
+    console.log(`Attempting transfer of ${formatCurrency(amount)} to ${recipientId} with note: "${note}"`);
+    
+    // Simulate database insert for tracking the expense/transfer
+    // In a real app, this would involve complex server-side logic (e.g., checking balance, updating two accounts)
+    try {
+        const currentUser = await loadUser();
+        if (!currentUser) {
+            alert("Error: User not authenticated. Cannot complete transfer.");
+            return;
+        }
+
+        const { data, error } = await supabase.from('transactions').insert([
+            {
+                user_id: currentUser.id,
+                type: 'Expense',
+                amount: parseFloat(amount),
+                date: new Date().toISOString(),
+                status: 'completed', // Assuming instant mock completion
+                description: `Transfer to ${recipientId}: ${note}`
+            }
+        ]);
+
+        if (error) {
+            console.error("Supabase Error during transfer:", error);
+            alert("Transfer Failed: " + error.message);
+            return false;
+        }
+
+        console.log("Transfer logged successfully (Mocked):", data);
+        return true;
+
+    } catch (e) {
+        console.error("Unexpected Transfer Error:", e);
+        alert("An unexpected error occurred during transfer.");
+        return false;
+    }
+}
+
+// --- EVENT LISTENER & FORM HANDLER ---
+transferForm.addEventListener("submit", async function(event) {
+    event.preventDefault(); // Prevent default form submission
+
+    const recipientId = document.getElementById("recipient-id").value.trim();
+    const amount = document.getElementById("amount").value;
+    const note = document.getElementById("note").value.trim();
+    const transferButton = document.querySelector(".transfer-button");
+
+    if (!recipientId || !amount) {
+        alert("Please enter a Recipient ID and Amount.");
+        return;
+    }
+
+    // Disable button and show loading state
+    transferButton.textContent = "Processing...";
+    transferButton.disabled = true;
+    successMessageEl.style.display = 'none';
+
+    // Call the mock transfer function
+    const success = await initiateTransfer(recipientId, amount, note);
+
+    // Re-enable button and reset state
+    transferButton.textContent = "Confirm Transfer";
+    transferButton.disabled = false;
+
+    if (success) {
+        successMessageEl.style.display = 'block';
+        
+        // Clear the form after a successful transfer
+        transferForm.reset();
+        
+        // Hide success message after a few seconds
+        setTimeout(() => {
+            successMessageEl.style.display = 'none';
+        }, 5000);
+    } else {
+        // If the API call failed, the error message is handled inside initiateTransfer
+    }
+});
+
+// --- INIT ---
+document.addEventListener('DOMContentLoaded', () => {
+    loadUser();
+});
+</script>
+</body>
+</html>
