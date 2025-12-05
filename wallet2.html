@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LodiPay - Wallet</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* --- STYLES --- */
+* {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+body {background-color:#f5f7fa; color:#333; min-height:100vh;}
+.dashboard-container {display:flex; min-height:100vh;}
+.sidebar {width:250px; background:linear-gradient(180deg,#08CB00 0%,#06A000 100%); color:white; padding:20px 0; box-shadow:3px 0 10px rgba(0,0,0,0.1); z-index:100;}
+.logo-container {text-align:center; margin-bottom:30px; padding:0 20px;}
+.logo {font-size:1.8rem; font-weight:700; color:white;}
+.logo span {color:#FFD700;}
+.nav-links {list-style:none; padding:0 15px;}
+.nav-links li {margin-bottom:5px;}
+.nav-links a {display:flex; align-items:center; padding:12px 15px; color:rgba(255,255,255,0.9); text-decoration:none; border-radius:8px; transition:all 0.3s ease;}
+.nav-links a:hover, .nav-links a.active {background:rgba(255,255,255,0.2); color:white;}
+.nav-links i {margin-right:12px; width:20px; text-align:center;}
+.main-content {flex:1; padding:20px; overflow-y:auto;}
+.header {display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; padding-bottom:20px; border-bottom:1px solid #eee;}
+.header h1 {color:#333; font-size:1.8rem;}
+.user-info {display:flex; align-items:center; gap:15px;}
+.user-avatar {width:40px; height:40px; border-radius:50%; background:#08CB00; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;}
+.user-avatar.hidden { display: none; }
+.section-title {font-size:1.5rem; margin-bottom:20px; color:#333; display:flex; align-items:center; gap:10px;}
+.wallet-overview {display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px; margin-bottom:30px;}
+.wallet-card {background:white; border-radius:12px; padding:25px; box-shadow:0 4px 15px rgba(0,0,0,0.05); display:flex; align-items:center; gap:20px;}
+.wallet-icon {width:60px; height:60px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.5rem;}
+.main-wallet .wallet-icon {background:rgba(8,203,0,0.1); color:#08CB00;}
+.savings .wallet-icon {background:rgba(66,133,244,0.1); color:#4285f4;}
+.investment .wallet-icon {background:rgba(251,188,5,0.1); color:#fbbc05;}
+.wallet-details h3 {margin-bottom:10px; color:#333;}
+.wallet-amount {font-size:1.8rem; font-weight:700; margin-bottom:5px;}
+.wallet-currency {color:#777; font-size:0.9rem;}
+.wallet-actions {display:flex; gap:10px; margin-top:15px;}
+.action-btn {padding:8px 15px; border-radius:6px; font-size:0.9rem; font-weight:500; cursor:pointer; transition:all 0.3s ease; border:none;}
+.btn-primary {background:#08CB00; color:white;}
+.btn-outline {background:transparent; border:1px solid #ddd; color:#333;}
+.action-btn:hover {opacity:0.9; transform:translateY(-2px);}
+.cards-section {margin-bottom:30px;}
+.cards-grid {display:grid; grid-template-columns:repeat(auto-fit,minmax(350px,1fr)); gap:20px;}
+.card {background:linear-gradient(135deg,#08CB00 0%,#06A000 100%); border-radius:12px; padding:25px; color:white; box-shadow:0 4px 15px rgba(0,0,0,0.1);}
+.card-header {display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;}
+.card-type {font-size:1.1rem; font-weight:600;}
+.card-network {font-size:1.5rem;}
+.card-number {font-size:1.4rem; letter-spacing:2px; margin-bottom:25px; font-family:monospace;}
+.card-details {display:flex; justify-content:space-between;}
+.card-info {display:flex; flex-direction:column;}
+.card-label {font-size:0.8rem; opacity:0.8; margin-bottom:5px;}
+.card-value {font-size:1rem; font-weight:500;}
+.add-card {background:white; border:2px dashed #ddd; border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px 20px; cursor:pointer; transition:all 0.3s ease;}
+.add-card:hover {border-color:#08CB00; background:#f9fff9;}
+.add-card i {font-size:2.5rem; color:#08CB00; margin-bottom:15px;}
+.add-card h3 {margin-bottom:10px; color:#333;}
+.add-card p {color:#777; margin-bottom:15px;}
+.btn-add {padding:10px 20px; background:#08CB00; color:white; border:none; border-radius:6px; font-weight:600; cursor:pointer; transition:all 0.3s ease;}
+.btn-add:hover {opacity:0.9; transform:translateY(-2px);}
+@media(max-width:768px){
+    .dashboard-container{flex-direction:column;}
+    .sidebar{width:100%; padding:15px 0;}
+    .nav-links{display:flex; overflow-x:auto; padding:0 10px;}
+    .nav-links li{margin:0 5px;}
+    .nav-links a{padding:10px 15px; white-space:nowrap;}
+    .main-content{padding:15px;}
+    .wallet-overview{grid-template-columns:1fr;}
+    .cards-grid{grid-template-columns:1fr;}
+}
+/* --- END STYLES --- */
+</style>
+</head>
+<body>
+<div class="dashboard-container">
+    <div class="sidebar">
+        <div class="logo-container">
+            <div class="logo">Lodi<span>Pay</span></div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#" class="active"><i class="fas fa-wallet"></i> Wallet</a></li>
+            <li><a href="transaction.html"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+        </ul>
+    </div> 
+    
+    <div class="main-content">
+        <div class="header">
+            <h1>Wallet</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar"></div>
+                <div>
+                    <div id="user-name" style="font-weight:600;">Loading User...</div>
+                    <div id="user-tier" style="font-size:0.8rem; color:#777;">Standard User</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-wallet"></i>
+            Wallet Overview
+        </div>
+
+        <div class="wallet-overview">
+            <div class="wallet-card main-wallet">
+                <div class="wallet-icon"><i class="fas fa-wallet"></i></div>
+                <div class="wallet-details">
+                    <h3>Main Wallet</h3>
+                    <div class="wallet-amount" id="main-wallet-balance">₱0.00</div> 
+                    <div class="wallet-currency">Philippine Peso</div>
+                    <div class="wallet-actions">
+                        <button class="action-btn btn-primary" id="add-funds-btn"><i class="fas fa-plus"></i> Add Funds</button>
+                        <a href="transfer.html" class="action-btn btn-outline" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 5px;"><i class="fas fa-exchange-alt"></i> Transfer</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wallet-card savings">
+                <div class="wallet-icon"><i class="fas fa-piggy-bank"></i></div>
+                <div class="wallet-details">
+                    <h3>Savings</h3>
+                    <div class="wallet-amount" id="savings-balance">₱0.00</div>
+                    <div class="wallet-currency">Philippine Peso</div>
+                    <div class="wallet-actions">
+                        <button class="action-btn btn-primary" id="add-savings-btn"><i class="fas fa-plus"></i> Add Savings</button>
+                        <button class="action-btn btn-outline" id="withdraw-btn"><i class="fas fa-arrow-up"></i> Withdraw</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wallet-card investment">
+                <div class="wallet-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="wallet-details">
+                    <h3>Investment</h3>
+                    <div class="wallet-amount" id="investment-balance">₱0.00</div>
+                    <div class="wallet-currency">Philippine Peso</div>
+                    <div class="wallet-actions">
+                        <button class="action-btn btn-primary" id="invest-btn"><i class="fas fa-plus"></i> Invest</button>
+                        <button class="action-btn btn-outline" id="redeem-btn"><i class="fas fa-arrow-down"></i> Redeem</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title cards-section">
+            <i class="fas fa-credit-card"></i>
+            My Cards
+        </div>
+
+        <div class="cards-grid" id="cards-grid">
+            <div class="add-card" id="add-card-button">
+                <i class="fas fa-plus-circle"></i>
+                <h3>Add New Card</h3>
+                <p>Link your debit or credit card to your LodiPay account</p>
+                <button class="btn-add">Add Card</button>
+            </div>
+        </div>
+    </div> 
+</div> 
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+// --- SUPABASE CONFIG ---
+const SUPABASE_URL = 'https://YOUR_SUPABASE_URL.supabase.co';
+const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUser = null;
+
+// Helper for currency formatting
+const formatCurrency = (amount) => `₱${Number(amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+
+// --- AUTH ---
+async function signIn() {
+    const { data, error } = await supabase.auth.signInWithOAuth({ provider: 'google' }); // or anon sign-in
+    if (error) console.error('Auth Error:', error);
+    else currentUser = data.user;
+}
+
+async function initUser() {
+    const user = supabase.auth.user();
+    if (!user) {
+        // Sign in anonymously if needed
+        const { data, error } = await supabase.auth.signInWithPassword({ email: 'anon@lodi.com', password: 'anonpass' });
+        if (error) console.error(error);
+        else currentUser = data.user;
+    } else {
+        currentUser = user;
+    }
+
+    if (!currentUser) return;
+
+    document.getElementById('user-name').textContent = currentUser.email || `User: ${currentUser.id.substring(0,8)}`;
+    document.getElementById('user-avatar').textContent = currentUser.email ? currentUser.email.charAt(0).toUpperCase() : currentUser.id.charAt(0).toUpperCase();
+
+    await checkUserProfile();
+}
+
+// --- USER PROFILE ---
+async function checkUserProfile() {
+    const { data, error } = await supabase.from('users').select('*').eq('id', currentUser.id).single();
+    if (!data) {
+        // Create mock profile if missing
+        await supabase.from('users').insert([{
+            id: currentUser.id,
+            fullName: document.getElementById('user-name').textContent,
+            tier: 'Standard User',
+            mainWallet: 10500.00,
+            savings: 5000.00,
+            investment: 8750.00,
+            cards: [{ type: 'LodiPay Virtual', last4: '5678', network: 'VISA', expiration: '12/26', holder: document.getElementById('user-name').textContent }]
+        }]);
+        loadWalletData({
+            mainWallet: 10500,
+            savings: 5000,
+            investment: 8750,
+            tier: 'Standard User',
+            cards: [{ type: 'LodiPay Virtual', last4: '5678', network: 'VISA', expiration: '12/26', holder: document.getElementById('user-name').textContent }]
+        });
+    } else {
+        loadWalletData(data);
+    }
+}
+
+// --- LOAD WALLET & CARDS ---
+function loadWalletData(data) {
+    document.getElementById('main-wallet-balance').textContent = formatCurrency(data.mainWallet || 0);
+    document.getElementById('savings-balance').textContent = formatCurrency(data.savings || 0);
+    document.getElementById('investment-balance').textContent = formatCurrency(data.investment || 0);
+    document.getElementById('user-tier').textContent = data.tier || 'Standard User';
+
+    const cardsGrid = document.getElementById('cards-grid');
+    const addCardButton = document.getElementById('add-card-button');
+    cardsGrid.innerHTML = '';
+    cardsGrid.appendChild(addCardButton);
+
+    (data.cards || []).forEach(card => {
+        const cardEl = document.createElement('div');
+        cardEl.className = 'card';
+        cardEl.innerHTML = `
+            <div class="card-header">
+                <div class="card-type">${card.type}</div>
+                <div class="card-network"><i class="fab fa-${card.network.toLowerCase()}"></i></div>
+            </div>
+            <div class="card-number">•••• •••• •••• ${card.last4}</div>
+            <div class="card-details">
+                <div class="card-info">
+                    <div class="card-label">Card Holder</div>
+                    <div class="card-value">${card.holder}</div>
+                </div>
+                <div class="card-info">
+                    <div class="card-label">Expires</div>
+                    <div class="card-value">${card.expiration}</div>
+                </div>
+            </div>
+        `;
+        cardsGrid.insertBefore(cardEl, addCardButton);
+    });
+}
+
+// --- ACTION BUTTONS ---
+async function addFunds(amount = 1000) {
+    const { data, error } = await supabase.from('users').select('mainWallet').eq('id', currentUser.id).single();
+    if (!data) return;
+    const newBalance = data.mainWallet + amount;
+    await supabase.from('users').update({ mainWallet: newBalance }).eq('id', currentUser.id);
+    document.getElementById('main-wallet-balance').textContent = formatCurrency(newBalance);
+}
+
+document.getElementById('add-funds-btn').addEventListener('click', () => addFunds());
+document.getElementById('add-savings-btn').addEventListener('click', () => addFunds()); // Simulate
+document.getElementById('invest-btn').addEventListener('click', () => addFunds()); // Simulate
+
+initUser();
+</script>
+</body>
+</html>
